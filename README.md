@@ -137,6 +137,20 @@ const clean = sanitizeHtml(dirty, {
 
 If you do not specify `allowedTags` or `allowedAttributes` our default list is applied. So if you really want an empty list, specify one.
 
+#### "I don't want images from a specific domain to be included."
+
+```js
+const clean = sanitizeHtml(dirty, {
+  disallowedAttributes: {
+    img: {
+      name: 'src',
+      values: ['badsite.com']
+    }
+  },
+})
+
+```
+
 #### "What if I want to allow all tags or all attributes?"
 
 Simple! instead of leaving `allowedTags` or `allowedAttributes` out of the options, set either
