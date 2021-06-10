@@ -240,10 +240,25 @@ function sanitizeHtml(html, options, _recursing) {
       }
 
       if (options.disallowedAttributes) {
-        each(attribs, function(value, a) {
-          if (options.disallowedAttributes[name] && options.disallowedAttributes[name].includes(a)) {
-            delete frame.attribs[a];
-            return;
+        each(attribs, function (value, a) {
+          // if there isn't a disallow rule for this tag, move on
+          if (!options.disallowedAttributes[name]) {
+            return
+          }
+          const da = options.disallowedAttributes[name]
+          if (isPlainObject(da) && da.name && da.name === a) {
+            // if the disallow rule is an object, cycle over the disallowed `values` of the attribute `name`
+            // and test against the tag's attribute value using plaintext and RegEx matching
+            for (const v of da.values) {
+              if (value === v || value.match(v)) {
+                delete frame.attribs[a]
+                return
+              }
+            }
+            return
+          }
+          if ((typeof da === 'string' || Array.isArray(da)) && da.includes(a)) {
+            delete frame.attribs[a]
           }
         })
       }
